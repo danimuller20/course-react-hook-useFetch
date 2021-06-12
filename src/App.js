@@ -1,25 +1,44 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, useEffect } from 'react';
+
+const useFetch = (url, options) => {
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    console.log('EFFECT', new Date().toLocaleString());
+
+    setLoading(true);
+
+    const fetchData = async () => {
+      await new Promise((res) => setTimeout(res, 3000));
+      try {
+        const response = await fetch(url, options);
+        const jsonResponse = await response.json();
+        setResult(jsonResponse);
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        throw error;
+      }
+    };
+    fetchData();
+  }, [url]);
+
+  return [result, loading];
+};
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const [result, loading] = useFetch('https://jsonplaceholder.typicode.com/posts', { header: 'header' });
+
+  if (loading) {
+    return <p>loading...</p>;
+  }
+
+  if (!loading && result) {
+    console.log(result);
+  }
+
+  return <h1>Oi</h1>;
 }
 
 export default App;
