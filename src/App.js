@@ -10,7 +10,7 @@ const useFetch = (url, options) => {
     setLoading(true);
 
     const fetchData = async () => {
-      await new Promise((res) => setTimeout(res, 3000));
+      await new Promise((res) => setTimeout(res, 1000));
       try {
         const response = await fetch(url, options);
         const jsonResponse = await response.json();
@@ -22,13 +22,13 @@ const useFetch = (url, options) => {
       }
     };
     fetchData();
-  }, [url]);
+  }, [url, options]);
 
   return [result, loading];
 };
 
 function App() {
-  const [result, loading] = useFetch('https://jsonplaceholder.typicode.com/posts', { header: 'header' });
+  const [result, loading] = useFetch('https://jsonplaceholder.typicode.com/posts');
 
   if (loading) {
     return <p>loading...</p>;
