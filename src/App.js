@@ -1,42 +1,38 @@
-import { useState, useEffect } from 'react';
-
-const useFetch = (url, options) => {
-  const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    console.log('EFFECT', new Date().toLocaleString());
-
-    setLoading(true);
-
-    const fetchData = async () => {
-      await new Promise((res) => setTimeout(res, 1000));
-      try {
-        const response = await fetch(url, options);
-        const jsonResponse = await response.json();
-        setResult(jsonResponse);
-        setLoading(false);
-      } catch (error) {
-        setLoading(false);
-        throw error;
-      }
-    };
-    fetchData();
-  }, [url, options]);
-
-  return [result, loading];
-};
+import { useState } from 'react';
+import { useFetch } from './hooks/useFetch';
 
 function App() {
-  const [result, loading] = useFetch('https://jsonplaceholder.typicode.com/posts');
+  const [postId, setPostId] = useState('');
+  const [result, loading] = useFetch('https://jsonplaceholder.typicode.com/posts/' + postId, {
+    headers: {
+      abc: '1' + postId,
+    },
+  });
 
   if (loading) {
     return <p>loading...</p>;
   }
 
-  if (!loading && result) {
-    console.log(result);
-  }
+  const handleIdClick = (id) => {
+    setPostId(id);
+  };
+
+  if (!loading && result)
+    return (
+      <div>
+        {result?.length > 0 ? (
+          result.map((post) => (
+            <div key={post.id} onClick={() => handleIdClick(post.id)}>
+              <h6>{post.title}</h6>
+            </div>
+          ))
+        ) : (
+          <div onClick={() => handleIdClick('')}>
+            <h6>{result.title}</h6>
+          </div>
+        )}
+      </div>
+    );
 
   return <h1>Oi</h1>;
 }
